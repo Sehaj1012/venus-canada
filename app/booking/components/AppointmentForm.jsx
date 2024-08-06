@@ -1,4 +1,4 @@
-"use client"; // Specify that this is a client component
+"use client"; // Mark as a client-side component
 
 import React, { useState } from 'react';
 
@@ -7,11 +7,7 @@ const AppointmentForm = () => {
   const [email, setEmail] = useState('');
   const [date, setDate] = useState('');
 
-  const onChangeName = (e) => setName(e.target.value);
-  const onChangeEmail = (e) => setEmail(e.target.value);
-  const onChangeDate = (e) => setDate(e.target.value);
-
-  const onSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch('/api/createBooking', {
@@ -43,12 +39,12 @@ const AppointmentForm = () => {
   return (
     <div className="flex flex-col items-center justify-center p-8 max-w-md mx-auto bg-white shadow-md rounded-lg">
       <h2 className="text-3xl font-bold mb-6 text-blue-600">Book an Appointment</h2>
-      <form onSubmit={onSubmit} className="flex flex-col w-full">
+      <form onSubmit={handleSubmit} className="flex flex-col w-full">
         <input
           type="text"
           placeholder="Name"
           value={name}
-          onChange={onChangeName}
+          onChange={(e) => setName(e.target.value)}
           className="mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
           required
         />
@@ -56,14 +52,14 @@ const AppointmentForm = () => {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={onChangeEmail}
+          onChange={(e) => setEmail(e.target.value)}
           className="mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
           required
         />
         <input
           type="date"
           value={date}
-          onChange={onChangeDate}
+          onChange={(e) => setDate(e.target.value)}
           className="mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
           required
         />

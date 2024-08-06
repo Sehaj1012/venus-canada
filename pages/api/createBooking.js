@@ -1,28 +1,26 @@
-import { db } from '../../lib/firebase'; // Import the Firestore instance
-import { collection, addDoc } from 'firebase/firestore';
+import { executeQuery } from '../../lib/db';
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
+    const { name, email, date } = req.body;
+
+    // Validate input data
+    if (!name || !email || !date) {
+      return res.status(400).json({ error: 'All fields are required.' });
+    }
+
     try {
-      const { name, email, date } = req.body;
+      // Insert the booking into the database
+      const result = await executeQuery(
+        'INSERT INTO Bookings (name, email, date) VALUES (?, ?, ?)',
+        [name, email, date]
+      );
 
-      // Validate input data
-      if (!name || !email || !date) {
-        return res.status(400).json({ error: "All fields are required." });
-      }
-
-      // Add a new document to the 'bookings' collection
-      const docRef = await addDoc(collection(db, "bookings"), {
-        name,
-        email,
-        date: new Date(date).toISOString(), // Store date as ISO string
-      });
-
-      // Send a success response
-      res.status(200).json({ id: docRef.id, message: 'Booking created successfully.' });
+      // Send a success response with the newly created booking ID
+      res.status(200).json({ id: result.insertId, message: 'Booking created successfully.' });
     } catch (error) {
-      console.error('Error creating booking:', error);
-      res.status(500).json({ error: error.message });
+      console.error('Failed to create booking:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   } else {
     res.setHeader('Allow', ['POST']);
