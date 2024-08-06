@@ -1,5 +1,4 @@
-"use client";
-// components/AppointmentForm.js
+"use client"; // Specify that this is a client component
 
 import React, { useState } from 'react';
 
@@ -8,21 +7,37 @@ const AppointmentForm = () => {
   const [email, setEmail] = useState('');
   const [date, setDate] = useState('');
 
-  const onChangeName = (e) => {
-    setName(e.target.value);
-  };
+  const onChangeName = (e) => setName(e.target.value);
+  const onChangeEmail = (e) => setEmail(e.target.value);
+  const onChangeDate = (e) => setDate(e.target.value);
 
-  const onChangeEmail = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const onChangeDate = (e) => {
-    setDate(e.target.value);
-  };
-
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    console.log(name, email, date);
+    try {
+      const response = await fetch('/api/createBooking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, date }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Something went wrong');
+      }
+
+      const data = await response.json();
+      alert(`Appointment booked successfully! Booking ID: ${data.id}`);
+
+      // Reset form fields
+      setName('');
+      setEmail('');
+      setDate('');
+    } catch (error) {
+      console.error('Failed to book appointment:', error);
+      alert('Failed to book appointment: ' + error.message);
+    }
   };
 
   return (
@@ -35,6 +50,7 @@ const AppointmentForm = () => {
           value={name}
           onChange={onChangeName}
           className="mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          required
         />
         <input
           type="email"
@@ -42,12 +58,14 @@ const AppointmentForm = () => {
           value={email}
           onChange={onChangeEmail}
           className="mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          required
         />
         <input
           type="date"
           value={date}
           onChange={onChangeDate}
           className="mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          required
         />
         <button
           type="submit"
