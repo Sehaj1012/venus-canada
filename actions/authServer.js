@@ -10,9 +10,9 @@ export async function Login(formData){
     const email = await formData.get('email')
     const password = await formData.get('password')
 
-    await loginUser(email,password)
+    const response = await loginUser(email,password)
 
-    redirect('/dashboard')
+        redirect('/dashboard')
 
     return true
 
